@@ -13,9 +13,9 @@ WORKDIR /app
 
 COPY . .
 
-RUN pip install poetry
+RUN pip install uv
 
-RUN poetry config virtualenvs.in-project false
-RUN poetry install --no-root
+COPY pyproject.toml .
+COPY uv.lock .
+RUN uv sync
 
-CMD ["poetry", "run","uvicorn", "main:app","--host","0.0.0.0","--port", "8000"]
