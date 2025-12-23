@@ -20,10 +20,9 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(BIGINT, primary_key=True)
-    registration_date: Mapped[datetime] = mapped_column(
-        TIMESTAMP, server_default=func.now()
-    )
+    username: Mapped[str]
     is_admin: Mapped[bool] = mapped_column(BOOLEAN)
+    created_at: Mapped[datetime] = mapped_column(TIMESTAMP, server_default=func.now())
 
 
 class Chanel(Base):
