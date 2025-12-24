@@ -1,3 +1,3 @@
-from .chanel_repository import AbstractChanelRepository
+from .chanel_repository import AbstractChannelRepository
 from .excel_table_repository import AbstractExcelTableRepository
 from .user_repository import AbstractUserRepository

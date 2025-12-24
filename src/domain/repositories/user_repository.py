@@ -9,11 +9,13 @@ class AbstractUserRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def create(self, *, id: int, username: str) -> UserDomain:
+    async def create(
+        self, *, id: int, username: str, is_admin: bool = False
+    ) -> UserDomain:
         raise NotImplementedError
 
     @abstractmethod
-    async def get_by_id(self, id: int) -> UserDomain:
+    async def get_by_id(self, id: int) -> UserDomain | None:
         raise NotImplementedError
 
     @abstractmethod
