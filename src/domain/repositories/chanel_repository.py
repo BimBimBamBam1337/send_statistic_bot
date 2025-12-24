@@ -5,10 +5,6 @@ from domain.models import ChannelDomain
 
 class AbstractChannelRepository(ABC):
     @abstractmethod
-    async def exists(self, id: int) -> ChannelDomain:
-        raise NotImplementedError
-
-    @abstractmethod
     async def create(self, id: int, name: str) -> ChannelDomain:
         raise NotImplementedError
 

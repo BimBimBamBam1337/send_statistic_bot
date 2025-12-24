@@ -1,11 +1,11 @@
 from typing import Any, Awaitable, Callable, Dict
 from datetime import datetime, timedelta
 
-from aiogram.types import TelegramObject, FSInputFile
+from aiogram.types import TelegramObject
 from aiogram import BaseMiddleware
 from loguru import logger
-from src.database.uow import UnitOfWork
-from src.database.engine import SessionFactory
+from src.infrastructure.database.uow import UnitOfWork
+from src.infrastructure.database.engine import SessionFactory
 
 
 class DependanciesMiddleware(BaseMiddleware):

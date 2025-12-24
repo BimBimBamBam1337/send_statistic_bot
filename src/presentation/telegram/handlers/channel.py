@@ -1,20 +1,10 @@
-import re
-
 from loguru import logger
 from aiogram import Router, Bot, F
-from aiogram.filters import Command
-from aiogram.types import Message
-from aiogram.fsm.context import FSMContext
 from aiogram.types import ChatMemberUpdated
 from aiogram.enums.chat_member_status import ChatMemberStatus
-from aiogram.enums.chat_type import ChatType
 
-from sqlalchemy import delete
 
-from src.database.uow import UnitOfWork
-from src.telegram.filters import AdminFilter
-from ..states import Newsletter
-from ..utils import read_profanity
+from src.infrastructure.database.uow import UnitOfWork
 
 router = Router()
 
@@ -26,14 +16,13 @@ router = Router()
 async def on_bot_added_to_channel(event: ChatMemberUpdated, uow: UnitOfWork, bot: Bot):
     async with uow:
         print(event.chat)
-        channel = await uow.channel_repo.get(event.chat.id)
+        channel = await uow.channel_repo.get_by_id(event.chat.id)
         if channel is None:
             channel = await uow.channel_repo.create(
-                channel_id=event.chat.id,
-                title=event.chat.title,
-                linked_chat_id=event.chat.linked_chat_id,
+                id=event.chat.id,
+                name=event.chat.title,
             )
-            logger.info(f"Added new channel {channel.title}: {channel.id}")
+            logger.info(f"Added new channel {channel.name}: {channel.id}")
 
             chat_id = event.chat.linked_chat_id
             if chat_id is not None:
@@ -55,7 +44,7 @@ async def on_bot_kicked_from_channel(event: ChatMemberUpdated, uow: UnitOfWork):
         return
 
     async with uow:
-        channel = await uow.channel_repo.get(event.chat.id)
+        channel = await uow.channel_repo.get_by_id(event.chat.id)
         if channel:
             await uow.channel_repo.delete(event.chat.id)
             logger.info(f"Removed channel {event.chat.title}: {event.chat.id}")

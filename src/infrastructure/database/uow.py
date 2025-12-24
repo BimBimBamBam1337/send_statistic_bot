@@ -1,10 +1,11 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from .repositories import UserRepository, ChannelRepository
+from .repositories import UserRepository, ChannelRepository, ExcelTableRepository
+from domain.uow import AbstractUnitOfWork
 
-all = ["SQLAlchemyUnitOfWork"]
+all = ["UnitOfWork"]
 
 
-class UnitOfWork:
+class UnitOfWork(AbstractUnitOfWork):
     def __init__(self, session_factory):
         self.session_factory = session_factory
 

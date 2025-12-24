@@ -5,10 +5,6 @@ from domain.models import UserDomain
 
 class AbstractUserRepository(ABC):
     @abstractmethod
-    async def exists(self, sheet_id: str) -> UserDomain:
-        raise NotImplementedError
-
-    @abstractmethod
     async def create(
         self, *, id: int, username: str, is_admin: bool = False
     ) -> UserDomain:
@@ -19,15 +15,15 @@ class AbstractUserRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_by_sheet_id(self, sheet_id: str) -> UserDomain:
+    async def get_by_name(self, name: str) -> UserDomain | None:
         raise NotImplementedError
 
     @abstractmethod
-    async def delete(self, id: int) -> UserDomain:
+    async def delete(self, id: int) -> UserDomain | None:
         raise NotImplementedError
 
     @abstractmethod
-    async def update(self, *, id: int, username: str | None) -> UserDomain:
+    async def update(self, *, id: int, username: str | None) -> UserDomain | None:
         raise NotImplementedError
 
     @abstractmethod
