@@ -1,19 +1,20 @@
-from typing import Optional
-
-from loguru import logger
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio.session import AsyncSession
-from domain.repositories import AbstractChannelRepository
-from database.models import ChannelORM
-from src.domain.models.chanel_model import ChannelDomain
+from src.domain.repositories import AbstractChannelRepository
+from src.infrastructure.database.models import ChannelORM
+from src.domain.models import ChannelDomain
 
 
 class ChannelRepository(AbstractChannelRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def create(self, id: int, name: str) -> ChannelDomain:
-        channel_orm = ChannelORM(id=id, name=name)
+    async def create(self, id: int, name: str, sheet_id: str) -> ChannelDomain:
+        channel_orm = ChannelORM(
+            id=id,
+            name=name,
+            sheet_id=sheet_id,
+        )
         self.session.add(channel_orm)
         await self.session.flush()
         return channel_orm.to_domain()

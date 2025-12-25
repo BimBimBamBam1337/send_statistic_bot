@@ -1,10 +1,12 @@
 import gspread
 
-from datetime import datetime, date, timedelta
 from loguru import logger
-from gspread_asyncio import AsyncioGspreadClientManager, AsyncioGspreadWorksheet
+from gspread_asyncio import (
+    AsyncioGspreadClientManager,
+    AsyncioGspreadWorksheet,
+    AsyncioGspreadSpreadsheet,
+)
 from google.oauth2.service_account import Credentials
-from typing import Optional
 
 
 def get_creds():
@@ -21,7 +23,15 @@ class GoogleSheetsAsync:
             logger.error(f"Ошибка при инициализации GoogleSheets: {e}", extra="google")
             raise
 
-    async def _get_sheet(
+    async def get_sheet(self, sheet_id: str) -> AsyncioGspreadSpreadsheet:
+        try:
+            agc = await self.agcm.authorize()
+            sheet = await agc.open_by_key(sheet_id)
+            return sheet
+        except gspread.WorksheetNotFound:
+            logger.error(f"Не найдена таблица с id {sheet_id}")
+
+    async def get_sheet_date(
         self, sh, title: str, sheet_id: str
     ) -> AsyncioGspreadWorksheet:
         """Получить лист по названию или создать с заголовками"""
@@ -36,7 +46,7 @@ class GoogleSheetsAsync:
         try:
             agc = await self.agcm.authorize()
             sh = await agc.open_by_key(sheet_id)
-            worksheet = await self._get_sheet(sh, sheet_title, sheet_id)
+            worksheet = await self.get_sheet_date(sh, sheet_title, sheet_id)
 
             rows = await worksheet.get_all_values()
             result: list[list[str]] = []

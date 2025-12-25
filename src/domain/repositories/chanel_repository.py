@@ -1,11 +1,11 @@
 from abc import ABC, abstractmethod
 
-from domain.models import ChannelDomain
+from src.domain.models import ChannelDomain
 
 
 class AbstractChannelRepository(ABC):
     @abstractmethod
-    async def create(self, id: int, name: str) -> ChannelDomain:
+    async def create(self, id: int, name: str, sheet_id: str) -> ChannelDomain:
         raise NotImplementedError
 
     @abstractmethod

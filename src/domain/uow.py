@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 
-from domain.repositories import (
+from src.domain.repositories import (
     AbstractUserRepository,
-    AbstractChanelRepository,
+    AbstractChannelRepository,
     AbstractExcelTableRepository,
 )
 
@@ -11,7 +11,7 @@ __all__ = ["AbstractUnitOfWork"]
 
 class AbstractUnitOfWork(ABC):
     user_repo: AbstractUserRepository
-    chanel_repo: AbstractChanelRepository
+    chanel_repo: AbstractChannelRepository
     excel_tabel_repo: AbstractExcelTableRepository
 
     @abstractmethod

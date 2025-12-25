@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from .repositories import UserRepository, ChannelRepository, ExcelTableRepository
-from domain.uow import AbstractUnitOfWork
+from src.domain.uow import AbstractUnitOfWork
 
 all = ["UnitOfWork"]
 
@@ -13,6 +13,7 @@ class UnitOfWork(AbstractUnitOfWork):
         self.session: AsyncSession = self.session_factory()
         self.user_repo = UserRepository(self.session)
         self.channel_repo = ChannelRepository(self.session)
+        self.excel_tabel_repo = ExcelTableRepository(self.session)
 
         return self
 

@@ -1,7 +1,7 @@
 from sqlalchemy import select, delete, update
 from sqlalchemy.ext.asyncio.session import AsyncSession
 
-from database.models import UserORM
+from src.infrastructure.database.models import UserORM
 from src.domain.models import UserDomain
 from src.domain.repositories import AbstractUserRepository
 

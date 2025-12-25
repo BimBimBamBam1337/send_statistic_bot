@@ -1,11 +1,13 @@
 from abc import ABC, abstractmethod
 
-from domain.models import ExcelTableDomain
+from src.domain.models import ExcelTableDomain
 
 
 class AbstractExcelTableRepository(ABC):
     @abstractmethod
-    async def create(self, id: int, sheet_id: str, sheet_url: str) -> ExcelTableDomain:
+    async def create(
+        self, sheet_id: str, sheet_url: str, name: str
+    ) -> ExcelTableDomain:
         raise NotImplementedError
 
     @abstractmethod

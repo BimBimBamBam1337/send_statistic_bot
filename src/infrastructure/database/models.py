@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy.orm import declarative_base, mapped_column, Mapped
+from sqlalchemy import ForeignKey
+from sqlalchemy.orm import Mapped, declarative_base, mapped_column, relationship
 from sqlalchemy import (
     INT,
     BIGINT,
@@ -38,16 +39,37 @@ class ChannelORM(BaseORM):
     name: Mapped[str] = mapped_column(String, server_default="")
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP, server_default=func.now())
 
+    sheet_id: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("excel_tabels.sheet_id", ondelete="CASCADE"),
+        unique=True,
+        nullable=False,
+    )
+
+    excel_table: Mapped["ExcelTableORM"] = relationship(
+        "ExcelTableORM",
+        back_populates="channel",
+        uselist=False,
+    )
+
     def to_domain(self) -> ChannelDomain:
         return ChannelDomain.model_validate(self)
 
 
 class ExcelTableORM(BaseORM):
     __tablename__ = "excel_tabels"
-    id: Mapped[int] = mapped_column(INT, primary_key=True)
-    sheet_id: Mapped[str] = mapped_column(String, server_default="")
+
+    id: Mapped[int] = mapped_column(INT, primary_key=True, autoincrement=True)
+    name: Mapped[str] = mapped_column(String, server_default="")
+    sheet_id: Mapped[str] = mapped_column(String, unique=True, nullable=False)
     sheet_url: Mapped[str] = mapped_column(String, server_default="")
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP, server_default=func.now())
+
+    channel: Mapped["ChannelORM"] = relationship(
+        "ChannelORM",
+        back_populates="excel_table",
+        uselist=False,
+    )
 
     def to_domain(self) -> ExcelTableDomain:
         return ExcelTableDomain.model_validate(self)

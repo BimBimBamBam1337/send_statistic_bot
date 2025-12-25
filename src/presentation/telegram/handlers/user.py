@@ -2,7 +2,7 @@ from loguru import logger
 from aiogram import Router, F, types
 from aiogram.filters import CommandStart
 
-from src.telegram.filters import AdminFilter
+from src.presentation.telegram.filters import AdminFilter
 
 from src.infrastructure.database.uow import UnitOfWork
 
