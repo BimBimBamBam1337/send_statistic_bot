@@ -7,6 +7,7 @@ from apscheduler.triggers.cron import CronTrigger
 from src.presentation.google import (
     GoogleSheetsAsync,
 )
+from src.config import settings
 from src.infrastructure.database.uow import UnitOfWork
 from src.utils import to_date_dict
 from src.presentation.telegram.utils import transform_date
@@ -15,7 +16,6 @@ gs = GoogleSheetsAsync()
 
 
 API_URL = "http://194.87.134.97:8008/cheques/revenue/by-chats"
-API_KEY = "dN9SxBICx3yAyCnMuYhinDJlSjWLNX3jlP4VfB3cp4DU7Sx3QfPwAWVcqMdQxJzeki3pllveJ2ZNqyEmefMJsQvtZPAjatGk9dzEn1HDbzUA2rZK7Jc0alK16HNxAa7o"
 
 
 async def plan_todays_plan(bot: Bot, uow: UnitOfWork):
@@ -52,7 +52,7 @@ async def get_revenue_by_chats(chat_names: list[str], date: str) -> dict:
             params={"date": date},
             headers={
                 "accept": "application/json",
-                "x-api-key": API_KEY,
+                "x-api-key": settings.api_key,
                 "Content-Type": "application/json",
             },
             json={"chat_names": chat_names},
@@ -85,7 +85,7 @@ async def push_low_percent(bot: Bot, uow: UnitOfWork, max_percent: int):
         if not today_stats or today_stats["plan"] is None:
             continue
 
-        revenue = revenue_map.get(channel.name, {}).get("revenue", 0)
+        revenue = revenue_map.get(channel.name, {}).get("total_revenue", 0)
         plan = today_stats["plan"]
 
         if plan <= 0:
@@ -95,8 +95,11 @@ async def push_low_percent(bot: Bot, uow: UnitOfWork, max_percent: int):
 
         if percent < max_percent:
             await bot.send_message(
-                chat_id=-1 * channel.id,
+                chat_id=channel.id,
                 text=(f"План на сегодня: {plan}\n" f"Выполнено: {percent}%"),
+            )
+            logger.info(
+                f"Отправил сообщение на {channel.id}, с названием {channel.name}, таблица привязанная: {table.sheet_id}"
             )
 
 
@@ -115,7 +118,7 @@ async def start_send_statistic(scheduler, bot: Bot, uow: UnitOfWork):
     )
     scheduler.add_job(
         push_low_percent,
-        CronTrigger(hour=15, minute=0),
+        CronTrigger(hour=13, minute=0),
         kwargs={"bot": bot, "uow": uow, "max_percent": 40},
         id="push_15",
     )

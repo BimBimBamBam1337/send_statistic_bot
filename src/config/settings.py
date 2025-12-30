@@ -10,7 +10,7 @@ class _Settings(BaseSettings):
     db_pass: str
     db_name: str
     redis_port: int
-
+    api_key: str
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
     )
