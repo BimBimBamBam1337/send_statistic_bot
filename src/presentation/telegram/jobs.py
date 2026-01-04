@@ -72,7 +72,6 @@ async def push_low_percent(bot: Bot, uow: UnitOfWork, max_percent: int):
     chat_names = [table.channel.name for table in excel_tables if table.channel]
 
     revenue_map = await get_revenue_by_chats(chat_names, api_date)
-
     for table in excel_tables:
         channel = table.channel
         if not channel:
@@ -80,12 +79,16 @@ async def push_low_percent(bot: Bot, uow: UnitOfWork, max_percent: int):
 
         raw_data = await gs.get_statistic(table.sheet_id, month)
         stats = to_date_dict(raw_data)
-
+        if not stats:
+            logger.error(f"Не найден {month} у таблицы {table.sheet_id}")
+            continue
         today_stats = stats.get(date_str)
         if not today_stats or today_stats["plan"] is None:
             continue
 
-        revenue = revenue_map.get(channel.name, {}).get("total_revenue", 0)
+        revenue = (
+            revenue_map.get("chats", {}).get(channel.name, {}).get("total_revenue", 0)
+        )
         plan = today_stats["plan"]
 
         if plan <= 0:
@@ -96,7 +99,9 @@ async def push_low_percent(bot: Bot, uow: UnitOfWork, max_percent: int):
         if percent < max_percent:
             await bot.send_message(
                 chat_id=channel.id,
-                text=(f"План на сегодня: {plan}\n" f"Выполнено: {percent}%"),
+                text=(
+                    f"на аккаунте {channel.name} отклонение. {percent}% выполнение менее {max_percent}, просадка по выручке!"
+                ),
             )
             logger.info(
                 f"Отправил сообщение на {channel.id}, с названием {channel.name}, таблица привязанная: {table.sheet_id}"
@@ -118,7 +123,7 @@ async def start_send_statistic(scheduler, bot: Bot, uow: UnitOfWork):
     )
     scheduler.add_job(
         push_low_percent,
-        CronTrigger(hour=13, minute=0),
+        CronTrigger(hour=15, minute=0),
         kwargs={"bot": bot, "uow": uow, "max_percent": 40},
         id="push_15",
     )
@@ -130,7 +135,7 @@ async def start_send_statistic(scheduler, bot: Bot, uow: UnitOfWork):
     )
     scheduler.add_job(
         push_low_percent,
-        CronTrigger(hour=22, minute=12),
+        CronTrigger(hour=21, minute=0),
         kwargs={"bot": bot, "uow": uow, "max_percent": 75},
         id="push_21",
     )

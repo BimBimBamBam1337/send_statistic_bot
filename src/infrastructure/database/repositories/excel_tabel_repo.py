@@ -10,9 +10,7 @@ class ExcelTableRepository(AbstractExcelTableRepository):
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def create(
-        self, sheet_id: str, sheet_url: str, name: str
-    ) -> ExcelTableDomain:
+    async def create(self, sheet_id: str, sheet_url: str, name: str) -> ExcelTableORM:
         excel_tabel_orm = ExcelTableORM(
             sheet_id=sheet_id,
             sheet_url=sheet_url,
@@ -20,7 +18,7 @@ class ExcelTableRepository(AbstractExcelTableRepository):
         )
         self.session.add(excel_tabel_orm)
         await self.session.flush()
-        return excel_tabel_orm.to_domain()
+        return excel_tabel_orm
 
     async def get_by_id(self, id: int) -> ExcelTableDomain | None:
         result = await self.session.execute(
